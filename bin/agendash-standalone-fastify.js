@@ -31,6 +31,10 @@ program
     "[optional] Path to bind Agendash to, default /",
     "/"
   )
+  .option(
+    "-C, --mongoTLSCaFile <path>",
+    "[optional] Absolute or relative path to TLS CA file, default is unset"
+  )
   .parse(process.argv);
 
 if (!program.db) {
@@ -45,7 +49,14 @@ if (!program.path.startsWith("/")) {
 
 const fastify = Fastify();
 
-const agenda = new Agenda().database(program.db, program.collection);
+let databaseOptions = {};
+if (program.mongoTLSCaFile && program.mongoTLSCaFile.length > 0) {
+  databaseOptions.tlsCAFile = program.mongoTLSCaFile;
+  // This seems to be required to be true here even if the Mongo URI defines ssl/tls
+  databaseOptions.tls = true;
+}
+
+const agenda = new Agenda().database(program.db, program.collection, databaseOptions);
 
 fastify.register(
   agendash(agenda, {

@@ -1,3 +1,7 @@
+# unreleased
+
+- feat: Allow configuring TLS CA file for Mongo connection
+
 # 3.1.0
 
 - Add Content-Security-Policy header to all server implementations
